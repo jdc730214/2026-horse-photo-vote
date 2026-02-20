@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 馬年攝影競賽 — 公開投票</title>
+    <style>
+        :root {
+            --gold:      #c9a84c;
+            --gold-lt:   #e8c97a;
+            --dark:      #0d0d0d;
+            --card-bg:   #1a1a1a;
+            --border:    #2e2e2e;
+            --text:      #e0e0e0;
+            --muted:     #777;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--dark);
+            color: var(--text);
+            font-family: '微軟正黑體', 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ── Header ─────────────────────────────── */
+        header {
+            background: linear-gradient(160deg, #1c1200 0%, #0d0d0d 60%);
+            border-bottom: 2px solid var(--gold);
+            padding: 36px 20px 28px;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.2em;
+            color: var(--gold);
+            letter-spacing: 6px;
+            text-shadow: 0 0 24px rgba(201,168,76,.45);
+        }
+        header p {
+            color: var(--muted);
+            margin-top: 8px;
+            font-size: .88em;
+            letter-spacing: 3px;
+        }
+
+        /* ── Key bar ─────────────────────────────── */
+        .key-bar {
+            background: #101010;
+            border-bottom: 1px solid var(--border);
+            padding: 12px 20px;
+            text-align: center;
+            font-size: .82em;
+            line-height: 1.8;
+        }
+        .key-bar .lbl { color: var(--muted); }
+        .key-bar code {
+            background: #1e1e1e;
+            border: 1px solid var(--gold);
+            color: var(--gold-lt);
+            padding: 3px 12px;
+            border-radius: 4px;
+            font-size: 1em;
+            margin: 0 8px;
+            letter-spacing: 1px;
+            font-family: 'Courier New', monospace;
+        }
+        .key-bar .note { color: var(--muted); }
+
+        /* ── Stats bar ───────────────────────────── */
+        .stats-bar {
+            background: #111;
+            border-bottom: 1px solid var(--border);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            font-size: .88em;
+        }
+        .stats-bar span { color: var(--muted); }
+        .stats-bar strong { color: var(--gold); }
+
+        /* ── Layout ──────────────────────────────── */
+        .wrap {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-heading {
+            text-align: center;
+            color: var(--gold);
+            font-size: 1em;
+            letter-spacing: 6px;
+            padding: 32px 0 24px;
+            border-bottom: 1px solid #1e1e1e;
+            margin-bottom: 28px;
+        }
+
+        /* ── Contestant grid ─────────────────────── */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 22px;
+            padding-bottom: 40px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform .2s, border-color .2s, box-shadow .2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+            box-shadow: 0 10px 32px rgba(201,168,76,.14);
+        }
+
+        .card-name {
+            background: linear-gradient(135deg, #1c1600, #1a1a1a);
+            color: var(--gold);
+            text-align: center;
+            padding: 14px;
+            font-size: 1.05em;
+            letter-spacing: 3px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .photos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            background: #111;
+        }
+        .photos img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            display: block;
+            cursor: zoom-in;
+            transition: opacity .2s;
+        }
+        .photos img:hover { opacity: .82; }
+
+        .card-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+        }
+        .vote-info { display: flex; flex-direction: column; }
+        .vote-lbl  { font-size: .72em; color: var(--muted); }
+        .vote-num  { font-size: 1.9em; font-weight: bold; color: var(--gold); line-height: 1.1; }
+
+        .btn-vote {
+            background: linear-gradient(135deg, #7a5e18, #c9a84c);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: .95em;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: inherit;
+            letter-spacing: 2px;
+            transition: opacity .2s, transform .1s;
+        }
+        .btn-vote:hover  { opacity: .88; transform: scale(1.04); }
+        .btn-vote:active { transform: scale(.97); }
+
+        /* ── Records section ─────────────────────── */
+        .records-section { padding-bottom: 60px; }
+
+        .records-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+        .records-head h2 { color: var(--gold); font-size: 1.05em; letter-spacing: 3px; }
+        .records-actions { display: flex; gap: 8px; align-items: center; }
+
+        .badge {
+            color: var(--muted);
+            font-size: .82em;
+        }
+
+        .btn-sm {
+            padding: 5px 13px;
+            border-radius: 6px;
+            font-size: .8em;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background .2s, border-color .2s, color .2s;
+        }
+        .btn-verify {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+        .btn-verify:hover { border-color: var(--gold); color: var(--gold); }
+        .btn-danger {
+            background: transparent;
+            border: 1px solid #7a2020;
+            color: #c0392b;
+        }
+        .btn-danger:hover { background: rgba(192,57,43,.1); }
+
+        .records-list {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            max-height: 420px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .records-list::-webkit-scrollbar { width: 5px; }
+        .records-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .rec-item {
+            background: #101010;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 11px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .rec-meta  { font-size: .75em; color: var(--muted); }
+        .rec-cipher {
+            font-family: 'Courier New', monospace;
+            font-size: .75em;
+            color: #6ec6e0;
+            word-break: break-all;
+            line-height: 1.5;
+        }
+        .no-rec {
+            text-align: center;
+            color: var(--muted);
+            padding: 36px;
+            font-size: .9em;
+        }
+
+        /* ── Lightbox ────────────────────────────── */
+        .lightbox {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            cursor: zoom-out;
+        }
+        .lightbox.on { display: flex; }
+        .lightbox img {
+            max-width: 92vw;
+            max-height: 92vh;
+            object-fit: contain;
+            border: 1px solid var(--gold);
+            border-radius: 4px;
+        }
+
+        /* ── Modal base ──────────────────────────── */
+        .overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.82);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 900;
+            padding: 20px;
+        }
+        .overlay.on { display: flex; }
+
+        .modal {
+            background: var(--card-bg);
+            border: 1px solid var(--gold);
+            border-radius: 16px;
+            padding: 30px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.8);
+        }
+        .modal h2 {
+            color: var(--gold);
+            font-size: 1.3em;
+            letter-spacing: 2px;
+            margin-bottom: 18px;
+        }
+        .modal .sub { color: var(--muted); font-size: .88em; margin-bottom: 4px; }
+        .modal .target-name { font-size: 1.2em; color: var(--gold-lt); font-weight: bold; }
+
+        .field { margin: 18px 0; }
+        .field label { display: block; color: var(--muted); font-size: .83em; margin-bottom: 7px; }
+        .field input, .field textarea {
+            width: 100%;
+            background: #111;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: .95em;
+            font-family: inherit;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .field input:focus, .field textarea:focus { border-color: var(--gold); }
+        .field input::placeholder, .field textarea::placeholder { color: #444; }
+        .field textarea { resize: vertical; min-height: 80px; font-family: 'Courier New', monospace; font-size: .82em; }
+
+        .row-btns { display: flex; gap: 10px; margin-top: 22px; }
+        .btn-cancel2 {
+            flex: 1;
+            background: #1e1e1e;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 11px;
+            border-radius: 8px;
+            font-size: .95em;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-cancel2:hover { background: #2a2a2a; }
+        .btn-ok {
+            flex: 2;
+            background: linear-gradient(135deg, #7a5e18, #c9a84c);
+            border: none;
+            color: #000;
+            padding: 11px;
+            border-radius: 8px;
+            font-size: .95em;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-ok:hover { opacity: .9; }
+
+        /* Decrypt result box */
+        .dec-result {
+            display: none;
+            background: #0c1a0c;
+            border: 1px solid #2a5a2a;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-top: 14px;
+            font-family: 'Courier New', monospace;
+            font-size: .85em;
+            color: #5dbe5d;
+            word-break: break-all;
+        }
+        .dec-result.fail { background: #1a0c0c; border-color: #5a2a2a; color: #e74c3c; }
+        .dec-result.on { display: block; }
+
+        /* ── Toast ───────────────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: 28px; right: 28px;
+            background: #0d1f0d;
+            border: 1px solid #2a6a2a;
+            color: #5dbe5d;
+            padding: 13px 20px;
+            border-radius: 10px;
+            font-size: .9em;
+            z-index: 2000;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity .3s, transform .3s;
+            pointer-events: none;
+        }
+        .toast.on { opacity: 1; transform: translateY(0); }
+
+        /* ── Sync indicator ─────────────────────── */
+        #sync-wrap { display: flex; align-items: center; gap: 6px; }
+        .sync-dot {
+            width: 9px; height: 9px; border-radius: 50%; display: inline-block;
+            flex-shrink: 0;
+        }
+        .sync-dot.init    { background: #555; }
+        .sync-dot.loading { background: #f0c040; animation: pulse .8s infinite; }
+        .sync-dot.ok      { background: #4caf50; }
+        .sync-dot.err     { background: #e74c3c; }
+        .sync-dot.warn    { background: #f39c12; }
+        #sync-label { font-size: .8em; color: var(--muted); }
+
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+        /* ── Loading overlay ─────────────────────── */
+        #loading-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.65);
+            display: none; align-items: center; justify-content: center;
+            z-index: 1500; flex-direction: column; gap: 14px;
+        }
+        #loading-overlay.on { display: flex; }
+        .spinner {
+            width: 42px; height: 42px;
+            border: 3px solid #333;
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-msg { color: var(--muted); font-size: .9em; }
+
+/* ── Responsive ──────────────────────────── */
+        @media (max-width: 640px) {
+            header h1 { font-size: 1.5em; letter-spacing: 4px; }
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        }
+        @media (max-width: 380px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────── -->
+<header>
+    <h1>2026 馬年攝影競賽</h1>
+    <p>公開投票系統 · 投票紀錄以 AES 加密公示</p>
+</header>
+
+<!-- ── AES Key Bar ─────────────────────────────── -->
+<div class="key-bar">
+    <span class="lbl">AES 加密金鑰：</span>
+    <code id="show-key"></code>
+    <span class="note">（憑此金鑰可自行解密投票紀錄，驗證真實性）</span>
+</div>
+
+<!-- ── Stats Bar ───────────────────────────────── -->
+<div class="stats-bar">
+    <span>總投票數：<strong id="total-votes">0</strong></span>
+    <span>參賽者數：<strong>5</strong> 位</span>
+    <span>紀錄筆數：<strong id="total-rec">0</strong> 筆</span>
+    <span id="sync-wrap" title="同步狀態">
+        <span class="sync-dot init" id="sync-dot"></span>
+        <span id="sync-label">初始化中…</span>
+    </span>
+</div>
+
+<!-- ── Main ────────────────────────────────────── -->
+<main class="wrap">
+    <p class="section-heading">— 參賽作品 —</p>
+    <div class="grid" id="grid"></div>
+</main>
+
+<!-- ── Encrypted Records ───────────────────────── -->
+<section class="wrap records-section">
+    <div class="records-head">
+        <h2>投票紀錄（AES 加密公示）</h2>
+        <div class="records-actions">
+            <span class="badge" id="rec-badge">共 0 筆</span>
+            <button class="btn-sm btn-verify" onclick="loadRemote()">重新整理</button>
+            <button class="btn-sm btn-verify" onclick="openVerify()">解密驗證</button>
+            <button class="btn-sm btn-danger" onclick="clearAll()">清除資料</button>
+        </div>
+    </div>
+    <div class="records-list" id="rec-list">
+        <p class="no-rec">尚無投票紀錄</p>
+    </div>
+</section>
+
+<!-- ── Lightbox ────────────────────────────────── -->
+<div class="lightbox" id="lb" onclick="closeLb()">
+    <img id="lb-img" src="" alt="">
+</div>
+
+<!-- ── Vote Modal ──────────────────────────────── -->
+<div class="overlay" id="vote-overlay">
+    <div class="modal">
+        <h2>確認投票</h2>
+        <p class="sub">您正在投票給</p>
+        <p class="target-name" id="m-target">—</p>
+        <div class="field">
+            <label>您的姓名（將以 AES 加密形式記錄於公示欄）</label>
+            <input id="m-name" type="text" placeholder="請輸入姓名" maxlength="20" autocomplete="off">
+        </div>
+        <div class="row-btns">
+            <button class="btn-cancel2" onclick="closeVote()">取消</button>
+            <button class="btn-ok" onclick="submitVote()">確認投票</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Decrypt / Verify Modal ─────────────────── -->
+<div class="overlay" id="ver-overlay">
+    <div class="modal">
+        <h2>解密驗證</h2>
+        <p style="color:var(--muted);font-size:.86em;margin-bottom:4px;">將加密字串貼入下方，使用金鑰解密驗證投票內容</p>
+        <div class="field">
+            <label>加密字串（從紀錄欄複製）</label>
+            <textarea id="v-cipher" placeholder="貼上 AES 加密字串…"></textarea>
+        </div>
+        <div class="field">
+            <label>AES 金鑰</label>
+            <input id="v-key" type="text" placeholder="金鑰">
+        </div>
+        <div class="dec-result" id="dec-out"></div>
+        <div class="row-btns">
+            <button class="btn-cancel2" onclick="closeVerify()">關閉</button>
+            <button class="btn-ok" onclick="doDecrypt()">解密</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Loading overlay ────────────────────────── -->
+<div id="loading-overlay">
+    <div class="spinner"></div>
+    <p class="loading-msg" id="loading-msg">載入中…</p>
+</div>
+
+<!-- ── Toast ───────────────────────────────────── -->
+<div class="toast" id="toast"></div>
+
+<!-- ── Scripts ─────────────────────────────────── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════
+//  CONFIG  — 可在此修改金鑰（須為 24 字元）
+// ═══════════════════════════════════════════════
+const AES_KEY = 'HorsePhoto2026VoteSys!!!'; // 24 字元
+
+const CONTESTANTS = [
+    {
+        name: '匿名者A',
+        photos: [
+            'images/匿名者A/90781.jpg',
+            'images/匿名者A/90836_0.jpg'
+        ]
+    },
+    {
+        name: '匿名者B',
+        photos: [
+            'images/匿名者B/temp_c93a12bfba264da575de76d58b2f678b2_5249416518548238234_289205967177798.jpg',
+            'images/匿名者B/temp_c93a12bfba264da575de76d58b2f678b2_5249416518548238234_289205968782954.jpg'
+        ]
+    },
+    {
+        name: '匿名者C',
+        photos: [
+            'images/匿名者C/90784.jpg',
+            'images/匿名者C/90785.jpg'
+        ]
+    },
+    {
+        name: '匿名者D',
+        photos: [
+            'images/匿名者D/90834_0.jpg',
+            'images/匿名者D/90835_0.jpg'
+        ]
+    },
+    {
+        name: '匿名者E',
+        photos: [
+            'images/匿名者E/115582_0.jpg',
+            'images/匿名者E/LINE_ALBUM_2026220_260220_2.jpg'
+        ]
+    }
+];
+
+// ═══════════════════════════════════════════════
+//  JSONBin CONFIG  ← 依照下方說明填入後即可使用
+//  1. 前往 https://jsonbin.io 免費註冊
+//  2. 點右上角頭像 → API Keys → 複製 Master Key
+//  3. 點 Create Bin，內容填 {"votes":{},"records":[]}
+//  4. 建立後複製網址最後的 ID（例如 6638abc123def...）
+// ═══════════════════════════════════════════════
+const BIN_ID  = '6997f7d6d0ea881f40c8bd39';
+const API_KEY = '$2a$10$ur0s4agA3aj1yPIbtmVBLesp8BAJe6PchSL.PnZjZE8suEZiYbhae';
+
+const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+// ═══════════════════════════════════════════════
+//  STATE（本地快取）
+// ═══════════════════════════════════════════════
+let votes   = {};
+let records = [];
+let pending = null;
+
+// ═══════════════════════════════════════════════
+//  JSONBin API
+// ═══════════════════════════════════════════════
+async function apiFetch() {
+    const res = await fetch(`${BIN_URL}/latest`, {
+        headers: { 'X-Master-Key': API_KEY }
+    });
+    if (!res.ok) throw new Error(`讀取失敗 HTTP ${res.status}`);
+    const json = await res.json();
+    return json.record;   // { votes:{}, records:[] }
+}
+
+async function apiSave(data) {
+    const res = await fetch(BIN_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+        body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error(`寫入失敗 HTTP ${res.status}`);
+}
+
+// ═══════════════════════════════════════════════
+//  Sync status
+// ═══════════════════════════════════════════════
+function setSyncStatus(state, label) {
+    document.getElementById('sync-dot').className   = 'sync-dot ' + state;
+    document.getElementById('sync-label').textContent = label;
+}
+
+// ═══════════════════════════════════════════════
+//  Loading overlay
+// ═══════════════════════════════════════════════
+function showLoading(msg) {
+    document.getElementById('loading-msg').textContent = msg;
+    document.getElementById('loading-overlay').classList.add('on');
+}
+function hideLoading() {
+    document.getElementById('loading-overlay').classList.remove('on');
+}
+
+// ═══════════════════════════════════════════════
+//  AES helpers
+// ═══════════════════════════════════════════════
+function aesEncrypt(plain) {
+    return CryptoJS.AES.encrypt(plain, AES_KEY).toString();
+}
+function aesDecrypt(cipher, key) {
+    try {
+        const b = CryptoJS.AES.decrypt(cipher, key || AES_KEY);
+        return b.toString(CryptoJS.enc.Utf8) || null;
+    } catch { return null; }
+}
+
+// ═══════════════════════════════════════════════
+//  Toast
+// ═══════════════════════════════════════════════
+let toastTimer;
+function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('on'), 3500);
+}
+
+// ═══════════════════════════════════════════════
+//  Lightbox
+// ═══════════════════════════════════════════════
+function openLb(src) {
+    document.getElementById('lb-img').src = src;
+    document.getElementById('lb').classList.add('on');
+}
+function closeLb() { document.getElementById('lb').classList.remove('on'); }
+
+// ═══════════════════════════════════════════════
+//  Vote modal
+// ═══════════════════════════════════════════════
+function openVote(name) {
+    pending = name;
+    document.getElementById('m-target').textContent = name;
+    document.getElementById('m-name').value = '';
+    document.getElementById('m-name').style.borderColor = '';
+    document.getElementById('vote-overlay').classList.add('on');
+    setTimeout(() => document.getElementById('m-name').focus(), 120);
+}
+function closeVote() {
+    document.getElementById('vote-overlay').classList.remove('on');
+    pending = null;
+}
+async function submitVote() {
+    const voterName = document.getElementById('m-name').value.trim();
+    if (!voterName) {
+        document.getElementById('m-name').style.borderColor = '#c0392b';
+        document.getElementById('m-name').focus();
+        return;
+    }
+    if (!BIN_ID || !API_KEY) {
+        toast('✗ 請先填入 BIN_ID 與 API_KEY');
+        return;
+    }
+
+    const candidate = pending;
+    closeVote();
+    showLoading('儲存投票中…');
+    setSyncStatus('loading', '儲存中…');
+
+    try {
+        // 先取最新資料避免覆蓋他人投票
+        const data = await apiFetch();
+
+        // 更新票數
+        data.votes[candidate] = (data.votes[candidate] || 0) + 1;
+
+        // 建立加密紀錄
+        const ts = new Date().toLocaleString('zh-TW', {
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+        });
+        const plain  = `${voterName} 投給 ${candidate}【${ts}】`;
+        const cipher = aesEncrypt(plain);
+        const seq    = data.records.length + 1;
+        const rec    = { seq, cipher, ts };
+        data.records.push(rec);
+
+        // 寫回雲端
+        await apiSave(data);
+
+        // 更新本地快取與畫面
+        votes   = data.votes;
+        records = data.records;
+        refreshCard(candidate);
+        refreshStats();
+        prependRec(rec);
+
+        setSyncStatus('ok', `已同步 ${new Date().toLocaleTimeString('zh-TW')}`);
+        toast(`✓ 感謝 ${voterName} 為「${candidate}」投票！`);
+    } catch (err) {
+        setSyncStatus('err', '儲存失敗');
+        toast('✗ 投票失敗，請重試：' + err.message);
+    } finally {
+        hideLoading();
+    }
+}
+
+// ═══════════════════════════════════════════════
+//  Load remote（同步 / 重新整理）
+// ═══════════════════════════════════════════════
+async function loadRemote(silent = false) {
+    if (!silent) showLoading('同步資料中…');
+    setSyncStatus('loading', '同步中…');
+    try {
+        const data = await apiFetch();
+        votes   = data.votes   || {};
+        records = data.records || [];
+
+        // 更新所有票數
+        document.querySelectorAll('.card').forEach(card => {
+            card.querySelector('.vote-num').textContent = votes[card.dataset.name] || 0;
+        });
+        renderRecords();
+        refreshStats();
+
+        setSyncStatus('ok', `已同步 ${new Date().toLocaleTimeString('zh-TW')}`);
+        if (!silent) toast('✓ 資料已同步');
+    } catch (err) {
+        setSyncStatus('err', '同步失敗');
+        if (!silent) toast('✗ 同步失敗：' + err.message);
+    } finally {
+        hideLoading();
+    }
+}
+
+// ═══════════════════════════════════════════════
+//  Verify modal
+// ═══════════════════════════════════════════════
+function openVerify() {
+    document.getElementById('v-cipher').value = '';
+    document.getElementById('v-key').value = AES_KEY;
+    const out = document.getElementById('dec-out');
+    out.className = 'dec-result';
+    out.textContent = '';
+    document.getElementById('ver-overlay').classList.add('on');
+}
+function closeVerify() { document.getElementById('ver-overlay').classList.remove('on'); }
+function doDecrypt() {
+    const c = document.getElementById('v-cipher').value.trim();
+    const k = document.getElementById('v-key').value.trim();
+    const out = document.getElementById('dec-out');
+    if (!c || !k) return;
+    const result = aesDecrypt(c, k);
+    out.className = 'dec-result on' + (result ? '' : ' fail');
+    out.textContent = result ? '解密結果：' + result : '解密失敗：金鑰不符或資料損毀';
+}
+
+// ═══════════════════════════════════════════════
+//  Clear all
+// ═══════════════════════════════════════════════
+async function clearAll() {
+    if (!confirm('確定清除所有投票資料？此動作無法還原。')) return;
+    showLoading('清除資料中…');
+    try {
+        await apiSave({ votes: {}, records: [] });
+        votes = {}; records = [];
+        document.querySelectorAll('.vote-num').forEach(el => el.textContent = '0');
+        document.getElementById('rec-list').innerHTML = '<p class="no-rec">尚無投票紀錄</p>';
+        refreshStats();
+        setSyncStatus('ok', '已清除');
+        toast('✓ 所有投票資料已清除');
+    } catch (err) {
+        setSyncStatus('err', '清除失敗');
+        toast('✗ 清除失敗：' + err.message);
+    } finally {
+        hideLoading();
+    }
+}
+
+// ═══════════════════════════════════════════════
+//  Render helpers
+// ═══════════════════════════════════════════════
+function refreshCard(name) {
+    const card = document.querySelector(`.card[data-name="${name}"]`);
+    if (card) card.querySelector('.vote-num').textContent = votes[name] || 0;
+}
+function refreshStats() {
+    const total = Object.values(votes).reduce((a, b) => a + b, 0);
+    document.getElementById('total-votes').textContent = total;
+    document.getElementById('total-rec').textContent   = records.length;
+    document.getElementById('rec-badge').textContent   = `共 ${records.length} 筆`;
+}
+function prependRec(rec) {
+    const list = document.getElementById('rec-list');
+    const empty = list.querySelector('.no-rec');
+    if (empty) empty.remove();
+    list.insertBefore(makeRecEl(rec), list.firstChild);
+}
+function makeRecEl(rec) {
+    const div = document.createElement('div');
+    div.className = 'rec-item';
+    div.innerHTML = `
+        <span class="rec-meta">#${rec.seq} &nbsp;·&nbsp; ${rec.ts}</span>
+        <code class="rec-cipher">${rec.cipher}</code>
+    `;
+    return div;
+}
+function renderRecords() {
+    const list = document.getElementById('rec-list');
+    if (!records.length) { list.innerHTML = '<p class="no-rec">尚無投票紀錄</p>'; return; }
+    list.innerHTML = '';
+    [...records].reverse().forEach(r => list.appendChild(makeRecEl(r)));
+}
+
+// ═══════════════════════════════════════════════
+//  Grid render
+// ═══════════════════════════════════════════════
+function renderGrid() {
+    const grid = document.getElementById('grid');
+    CONTESTANTS.forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.name = c.name;
+        card.innerHTML = `
+            <div class="card-name">${c.name}</div>
+            <div class="photos">
+                <img src="${c.photos[0]}" alt="${c.name} 作品1" loading="lazy">
+                <img src="${c.photos[1]}" alt="${c.name} 作品2" loading="lazy">
+            </div>
+            <div class="card-foot">
+                <div class="vote-info">
+                    <span class="vote-lbl">目前票數</span>
+                    <span class="vote-num">0</span>
+                </div>
+                <button class="btn-vote">投　票</button>
+            </div>
+        `;
+        card.querySelectorAll('.photos img').forEach(img =>
+            img.addEventListener('click', () => openLb(img.src))
+        );
+        card.querySelector('.btn-vote').addEventListener('click', () => openVote(c.name));
+        grid.appendChild(card);
+    });
+}
+
+// ═══════════════════════════════════════════════
+//  Keyboard shortcuts
+// ═══════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeVote(); closeVerify(); closeLb(); }
+});
+document.getElementById('m-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitVote();
+});
+document.getElementById('v-cipher').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doDecrypt(); }
+});
+['vote-overlay','ver-overlay'].forEach(id => {
+    document.getElementById(id).addEventListener('click', e => {
+        if (e.target.id === id) { id === 'vote-overlay' ? closeVote() : closeVerify(); }
+    });
+});
+
+// ═══════════════════════════════════════════════
+//  Init
+// ═══════════════════════════════════════════════
+document.getElementById('show-key').textContent = AES_KEY;
+renderGrid();
+loadRemote(true);  // 啟動時自動從雲端載入
+
+// 每 30 秒自動同步一次
+setInterval(() => loadRemote(true), 30000);
+</script>
+</body>
+</html>
