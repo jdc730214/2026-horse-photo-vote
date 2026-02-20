@@ -260,11 +260,26 @@
         .lightbox.on { display: flex; }
         .lightbox img {
             max-width: 92vw;
-            max-height: 92vh;
+            max-height: 84vh;
             object-fit: contain;
             border: 1px solid var(--gold);
             border-radius: 4px;
         }
+        .lb-close {
+            position: absolute;
+            top: 20px; right: 24px;
+            background: rgba(0,0,0,.75);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 9px 20px;
+            border-radius: 8px;
+            font-size: .9em;
+            cursor: pointer;
+            font-family: inherit;
+            letter-spacing: 1px;
+            transition: background .2s;
+        }
+        .lb-close:hover { background: rgba(201,168,76,.18); }
 
         /* ── Modal base ──────────────────────────── */
         .overlay {
@@ -469,21 +484,32 @@
 <!-- ── Lightbox ────────────────────────────────── -->
 <div class="lightbox" id="lb" onclick="closeLb()">
     <img id="lb-img" src="" alt="">
+    <button class="lb-close" onclick="event.stopPropagation(); closeLb()">✕ 返回</button>
 </div>
 
 <!-- ── Vote Modal ──────────────────────────────── -->
 <div class="overlay" id="vote-overlay">
     <div class="modal">
-        <h2>確認投票</h2>
-        <p class="sub">您正在投票給</p>
-        <p class="target-name" id="m-target">—</p>
-        <div class="field">
-            <label>您的姓名（將以 AES 加密形式記錄於公示欄）</label>
-            <input id="m-name" type="text" placeholder="請輸入姓名" maxlength="20" autocomplete="off">
+        <!-- 投票表單 -->
+        <div id="vote-form">
+            <h2>確認投票</h2>
+            <p class="sub">您正在投票給</p>
+            <p class="target-name" id="m-target">—</p>
+            <div class="field">
+                <label>您的姓名（將以 AES 加密形式記錄於公示欄）</label>
+                <input id="m-name" type="text" placeholder="請輸入姓名" maxlength="20" autocomplete="off">
+            </div>
+            <div class="row-btns">
+                <button class="btn-cancel2" onclick="closeVote()">取消</button>
+                <button class="btn-ok" onclick="submitVote()">確認投票</button>
+            </div>
         </div>
-        <div class="row-btns">
-            <button class="btn-cancel2" onclick="closeVote()">取消</button>
-            <button class="btn-ok" onclick="submitVote()">確認投票</button>
+        <!-- 投票成功畫面 -->
+        <div id="vote-success" style="display:none; text-align:center; padding:10px 0;">
+            <p style="font-size:2.4em; color:var(--gold); margin-bottom:10px;">✓</p>
+            <p style="color:var(--gold); font-size:1.15em; letter-spacing:3px; margin-bottom:12px;">投票成功！</p>
+            <p id="vote-success-msg" style="color:var(--muted); font-size:.9em; line-height:1.9; margin-bottom:28px;"></p>
+            <button class="btn-ok" onclick="closeVote()" style="width:100%; padding:13px; font-size:1em;">← 返回主頁</button>
         </div>
     </div>
 </div>
@@ -670,6 +696,8 @@ function openVote(name) {
 }
 function closeVote() {
     document.getElementById('vote-overlay').classList.remove('on');
+    document.getElementById('vote-form').style.display = '';
+    document.getElementById('vote-success').style.display = 'none';
     pending = null;
 }
 async function submitVote() {
@@ -685,7 +713,6 @@ async function submitVote() {
     }
 
     const candidate = pending;
-    closeVote();
     showLoading('儲存投票中…');
     setSyncStatus('loading', '儲存中…');
 
@@ -718,7 +745,12 @@ async function submitVote() {
         prependRec(rec);
 
         setSyncStatus('ok', `已同步 ${new Date().toLocaleTimeString('zh-TW')}`);
-        toast(`✓ 感謝 ${voterName} 為「${candidate}」投票！`);
+
+        // 顯示投票成功畫面（不自動關閉，讓使用者點「返回主頁」）
+        document.getElementById('vote-form').style.display = 'none';
+        document.getElementById('vote-success-msg').textContent =
+            `感謝 ${voterName} 為「${candidate}」投票！\n票數已更新並同步至雲端。`;
+        document.getElementById('vote-success').style.display = '';
     } catch (err) {
         setSyncStatus('err', '儲存失敗');
         toast('✗ 投票失敗，請重試：' + err.message);
